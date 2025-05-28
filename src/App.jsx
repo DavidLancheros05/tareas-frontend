@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import axios from 'axios';
 import Estadisticas from './Estadisticas.jsx';
+import { io } from 'socket.io-client';
 
+const socket = io('https://tareas-backend-cid6.onrender.com'); // cambia si estás en local
 const API_URL = 'https://tareas-backend-cid6.onrender.com/tareas';
 
 function App() {
@@ -10,10 +12,32 @@ function App() {
   const [nuevaTarea, setNuevaTarea] = useState('');
   const [stats, setStats] = useState(null);
 
-  useEffect(() => {
-    cargarTareas();
+useEffect(() => {
+  cargarTareas();
+  cargarEstadisticas();
+
+  // 🔄 Escuchar eventos
+  socket.on('tareaAgregada', tarea => {
+    setTareas(prev => [...prev, tarea]);
     cargarEstadisticas();
-  }, []);
+  });
+
+  socket.on('tareaActualizada', tarea => {
+    setTareas(prev => prev.map(t => t._id === tarea._id ? tarea : t));
+    cargarEstadisticas();
+  });
+
+  socket.on('tareaEliminada', id => {
+    setTareas(prev => prev.filter(t => t._id !== id));
+    cargarEstadisticas();
+  });
+
+  return () => {
+    socket.off('tareaAgregada');
+    socket.off('tareaActualizada');
+    socket.off('tareaEliminada');
+  };
+}, []);
 
   const cargarTareas = () => {
     axios.get(API_URL)
