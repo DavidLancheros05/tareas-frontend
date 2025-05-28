@@ -10,7 +10,6 @@ function App() {
   const [nuevaTarea, setNuevaTarea] = useState('');
   const [stats, setStats] = useState(null);
 
-  // Carga tareas y estadísticas al iniciar
   useEffect(() => {
     cargarTareas();
     cargarEstadisticas();
@@ -34,16 +33,17 @@ function App() {
       .then(res => {
         setTareas([...tareas, res.data]);
         setNuevaTarea('');
-        cargarEstadisticas(); // Actualiza estadísticas tras agregar
+        cargarEstadisticas();
       })
       .catch(err => console.error("Error agregando tarea:", err));
   };
 
   const toggleTarea = (id) => {
-    axios.put(`${API_URL}/${id}`)
+    const tareaActual = tareas.find(t => t._id === id);
+    axios.put(`${API_URL}/${id}`, { completada: !tareaActual.completada })
       .then(res => {
         setTareas(tareas.map(t => t._id === id ? res.data : t));
-        cargarEstadisticas(); // Actualiza estadísticas tras cambiar estado
+        cargarEstadisticas();
       })
       .catch(err => console.error("Error actualizando tarea:", err));
   };
@@ -52,7 +52,7 @@ function App() {
     axios.delete(`${API_URL}/${id}`)
       .then(() => {
         setTareas(tareas.filter(t => t._id !== id));
-        cargarEstadisticas(); // Actualiza estadísticas tras eliminar
+        cargarEstadisticas();
       })
       .catch(err => console.error("Error eliminando tarea:", err));
   };
@@ -86,10 +86,8 @@ function App() {
         ))}
       </ul>
 
-      <Estadisticas />
-
+      {stats && <Estadisticas stats={stats} />}
     </div>
-    
   );
 }
 
