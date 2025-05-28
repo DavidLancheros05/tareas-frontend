@@ -86,7 +86,7 @@ function App() {
         ))}
       </ul>
 
-      <estadisticas />
+      <estadisticas stats={stats} />
 
     </div>
     
