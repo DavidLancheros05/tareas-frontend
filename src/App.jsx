@@ -79,7 +79,7 @@ function App() {
                 cursor: 'pointer',
               }}
             >
-              {tarea.texto}
+              {tarea.texto} {tarea.completada ? '✅' : '❌'}
             </span>
             <button onClick={() => eliminarTarea(tarea._id)}>❌</button>
           </li>
