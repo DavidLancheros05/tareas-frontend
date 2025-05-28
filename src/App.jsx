@@ -86,15 +86,6 @@ function App() {
         ))}
       </ul>
 
-      {stats && (
-        <div className="stats">
-          <h2>Estadísticas</h2>
-          <p>Total tareas: {stats.total}</p>
-          <p>Completadas: {stats.completadas}</p>
-          <p>Pendientes: {stats.pendientes}</p>
-          <p>Porcentaje completado: {stats.porcentaje.toFixed(2)}%</p>
-        </div>
-      )}
       <Estadisticas />
     </div>
     
