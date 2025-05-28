@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const API_URL = 'https://tareas-backend-cid6.onrender.com/tareas/stats';
 
-function Estadisticas() {
+function estadisticas() {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
@@ -25,4 +25,4 @@ function Estadisticas() {
   );
 }
 
-export default Estadisticas;
+export default estadisticas;
