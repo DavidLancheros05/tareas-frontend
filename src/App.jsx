@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
+import Estadisticas from './Estadisticas';
 import './App.css';
 import axios from 'axios';
 
-// Cambia esta URL por la de tu backend en Render
 const API_URL = 'https://tareas-backend-cid6.onrender.com/tareas';
 
 function App() {
   const [tareas, setTareas] = useState([]);
   const [nuevaTarea, setNuevaTarea] = useState('');
+  const [stats, setStats] = useState(null); // ← mover aquí
 
   // Cargar tareas al iniciar
   useEffect(() => {
@@ -16,11 +17,15 @@ function App() {
         setTareas(res.data);
       })
       .catch(error => console.error("Error cargando tareas:", error));
+
+    // Cargar estadísticas
+    axios.get(`${API_URL}/stats`)
+      .then(res => setStats(res.data))
+      .catch(err => console.error("Error cargando estadísticas:", err));
   }, []);
 
   const agregarTarea = () => {
     if (nuevaTarea.trim() === '') return;
-    console.log('Enviando texto:', nuevaTarea);
     axios.post(API_URL, { texto: nuevaTarea })
       .then((res) => {
         setTareas([...tareas, res.data]);
@@ -74,6 +79,20 @@ function App() {
           </li>
         ))}
       </ul>
+
+      {/* Mostrar estadísticas numéricas */}
+      {stats && (
+        <div className="stats">
+          <h2>Estadísticas</h2>
+          <p>Total: {stats.total}</p>
+          <p>Completadas: {stats.completadas}</p>
+          <p>Pendientes: {stats.pendientes}</p>
+          <p>Completado: {stats.porcentaje.toFixed(2)}%</p>
+        </div>
+      )}
+
+      {/* Mostrar gráfico de pastel */}
+      <Estadisticas />
     </div>
   );
 }
