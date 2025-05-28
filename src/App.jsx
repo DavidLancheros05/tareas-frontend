@@ -3,7 +3,7 @@ import './App.css';
 import axios from 'axios';
 
 // Cambia esta URL por la de tu backend en Render
-const API_URL = 'https://tareas-app-4.onrender.com/tareas';
+const API_URL = 'https://tareas-backend-cid6.onrender.com/tareas';
 
 function App() {
   const [tareas, setTareas] = useState([]);
@@ -20,26 +20,29 @@ function App() {
 
   const agregarTarea = () => {
     if (nuevaTarea.trim() === '') return;
+    console.log('Enviando texto:', nuevaTarea);
     axios.post(API_URL, { texto: nuevaTarea })
       .then((res) => {
         setTareas([...tareas, res.data]);
         setNuevaTarea('');
       })
-      .catch(error => console.error("Error agregando tarea:", error));
+      .catch(error => {
+        console.error("Error agregando tarea:", error);
+      });
   };
 
-  const toggleTarea = (id) => {  // Cambiado a usar ID en lugar de índice
+  const toggleTarea = (id) => {
     axios.put(`${API_URL}/${id}`)
       .then((res) => {
-        setTareas(tareas.map(t => t.id === id ? res.data : t));
+        setTareas(tareas.map(t => t._id === id ? res.data : t));
       })
       .catch(error => console.error("Error actualizando tarea:", error));
   };
 
-  const eliminarTarea = (id) => {  // Cambiado a usar ID en lugar de índice
+  const eliminarTarea = (id) => {
     axios.delete(`${API_URL}/${id}`)
       .then(() => {
-        setTareas(tareas.filter(t => t.id !== id));
+        setTareas(tareas.filter(t => t._id !== id));
       })
       .catch(error => console.error("Error eliminando tarea:", error));
   };
@@ -57,9 +60,9 @@ function App() {
 
       <ul>
         {tareas.map((tarea) => (
-          <li key={tarea.id}>
+          <li key={tarea._id}>
             <span
-              onClick={() => toggleTarea(tarea.id)}
+              onClick={() => toggleTarea(tarea._id)}
               style={{
                 textDecoration: tarea.completada ? 'line-through' : 'none',
                 cursor: 'pointer',
@@ -67,7 +70,7 @@ function App() {
             >
               {tarea.texto}
             </span>
-            <button onClick={() => eliminarTarea(tarea.id)}>❌</button>
+            <button onClick={() => eliminarTarea(tarea._id)}>❌</button>
           </li>
         ))}
       </ul>
