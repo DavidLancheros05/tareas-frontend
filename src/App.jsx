@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 import axios from 'axios';
+import Estadisticas from './Estadisticas';
 
 const API_URL = 'https://tareas-backend-cid6.onrender.com/tareas';
 
@@ -94,7 +95,9 @@ function App() {
           <p>Porcentaje completado: {stats.porcentaje.toFixed(2)}%</p>
         </div>
       )}
+      <Estadisticas />
     </div>
+    
   );
 }
 
