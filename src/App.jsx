@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 import axios from 'axios';
-import Estadisticas from './estadisticas';
+import Estadisticas from './Estadisticas';
 
 const API_URL = 'https://tareas-backend-cid6.onrender.com/tareas';
 
@@ -86,7 +86,7 @@ function App() {
         ))}
       </ul>
 
-      <estadisticas stats={stats} />
+      <Estadisticas />
 
     </div>
     
