@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import './App.css';
-import Estadisticas from './Estadisticas';  // Importa el componente
+import axios from 'axios';
 
 const API_URL = 'https://tareas-backend-cid6.onrender.com/tareas';
 
@@ -10,49 +9,57 @@ function App() {
   const [nuevaTarea, setNuevaTarea] = useState('');
   const [stats, setStats] = useState(null);
 
+  // Carga tareas y estadísticas al iniciar
   useEffect(() => {
-    axios.get(API_URL)
-      .then((res) => {
-        setTareas(res.data);
-      })
-      .catch(error => console.error("Error cargando tareas:", error));
+    cargarTareas();
+    cargarEstadisticas();
+  }, []);
 
+  const cargarTareas = () => {
+    axios.get(API_URL)
+      .then(res => setTareas(res.data))
+      .catch(err => console.error("Error cargando tareas:", err));
+  };
+
+  const cargarEstadisticas = () => {
     axios.get(`${API_URL}/stats`)
       .then(res => setStats(res.data))
       .catch(err => console.error("Error cargando estadísticas:", err));
-  }, []);
+  };
 
   const agregarTarea = () => {
     if (nuevaTarea.trim() === '') return;
     axios.post(API_URL, { texto: nuevaTarea })
-      .then((res) => {
+      .then(res => {
         setTareas([...tareas, res.data]);
         setNuevaTarea('');
+        cargarEstadisticas(); // Actualiza estadísticas tras agregar
       })
-      .catch(error => {
-        console.error("Error agregando tarea:", error);
-      });
+      .catch(err => console.error("Error agregando tarea:", err));
   };
 
   const toggleTarea = (id) => {
     axios.put(`${API_URL}/${id}`)
-      .then((res) => {
+      .then(res => {
         setTareas(tareas.map(t => t._id === id ? res.data : t));
+        cargarEstadisticas(); // Actualiza estadísticas tras cambiar estado
       })
-      .catch(error => console.error("Error actualizando tarea:", error));
+      .catch(err => console.error("Error actualizando tarea:", err));
   };
 
   const eliminarTarea = (id) => {
     axios.delete(`${API_URL}/${id}`)
       .then(() => {
         setTareas(tareas.filter(t => t._id !== id));
+        cargarEstadisticas(); // Actualiza estadísticas tras eliminar
       })
-      .catch(error => console.error("Error eliminando tarea:", error));
+      .catch(err => console.error("Error eliminando tarea:", err));
   };
 
   return (
     <div className="app">
       <h1>Mis Tareas</h1>
+
       <input
         type="text"
         value={nuevaTarea}
@@ -61,11 +68,8 @@ function App() {
       />
       <button onClick={agregarTarea}>Agregar</button>
 
-      {/* Usamos el componente Estadisticas aquí */}
-      <Estadisticas stats={stats} />
-
       <ul>
-        {tareas.map((tarea) => (
+        {tareas.map(tarea => (
           <li key={tarea._id}>
             <span
               onClick={() => toggleTarea(tarea._id)}
@@ -80,6 +84,16 @@ function App() {
           </li>
         ))}
       </ul>
+
+      {stats && (
+        <div className="stats">
+          <h2>Estadísticas</h2>
+          <p>Total tareas: {stats.total}</p>
+          <p>Completadas: {stats.completadas}</p>
+          <p>Pendientes: {stats.pendientes}</p>
+          <p>Porcentaje completado: {stats.porcentaje.toFixed(2)}%</p>
+        </div>
+      )}
     </div>
   );
 }
