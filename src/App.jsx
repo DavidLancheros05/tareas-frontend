@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
-import Estadisticas from './Estadisticas';
-import './App.css';
 import axios from 'axios';
+import './App.css';
+import Estadisticas from './Estadisticas';  // Importa el componente
 
 const API_URL = 'https://tareas-backend-cid6.onrender.com/tareas';
 
 function App() {
   const [tareas, setTareas] = useState([]);
   const [nuevaTarea, setNuevaTarea] = useState('');
-  const [stats, setStats] = useState(null); // ← mover aquí
+  const [stats, setStats] = useState(null);
 
-  // Cargar tareas al iniciar
   useEffect(() => {
     axios.get(API_URL)
       .then((res) => {
@@ -18,7 +17,6 @@ function App() {
       })
       .catch(error => console.error("Error cargando tareas:", error));
 
-    // Cargar estadísticas
     axios.get(`${API_URL}/stats`)
       .then(res => setStats(res.data))
       .catch(err => console.error("Error cargando estadísticas:", err));
@@ -63,6 +61,9 @@ function App() {
       />
       <button onClick={agregarTarea}>Agregar</button>
 
+      {/* Usamos el componente Estadisticas aquí */}
+      <Estadisticas stats={stats} />
+
       <ul>
         {tareas.map((tarea) => (
           <li key={tarea._id}>
@@ -79,20 +80,6 @@ function App() {
           </li>
         ))}
       </ul>
-
-      {/* Mostrar estadísticas numéricas */}
-      {stats && (
-        <div className="stats">
-          <h2>Estadísticas</h2>
-          <p>Total: {stats.total}</p>
-          <p>Completadas: {stats.completadas}</p>
-          <p>Pendientes: {stats.pendientes}</p>
-          <p>Completado: {stats.porcentaje.toFixed(2)}%</p>
-        </div>
-      )}
-
-      {/* Mostrar gráfico de pastel */}
-      <Estadisticas />
     </div>
   );
 }
