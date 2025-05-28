@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 import axios from 'axios';
-import Estadisticas from './Estadisticas';
+import Estadisticas from './estadisticas';
 
 const API_URL = 'https://tareas-backend-cid6.onrender.com/tareas';
 
